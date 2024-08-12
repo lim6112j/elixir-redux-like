@@ -8,9 +8,13 @@ https://medium.com/flatiron-labs/something-useless-redux-implemented-in-elixir-2
 iex -S mix
 
 {:ok, store} = Store.start_link(CountReducer)
+
 ref = Store.subscribe(store, fn (state) -> IO.puts "I got called #{state}" end)
+
 Store.dispatch(store,%{type: "INCREMENT"})
+
 Store.remove_subscriber(store, ref)
+
 Store.dispatch(store,%{type: "INCREMENT"})
 
 ## Installation
