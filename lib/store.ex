@@ -19,6 +19,10 @@ defmodule Store do
 	def get_state(store) do
 		GenServer.call(store, {:get_state})
 	end
+	def get_subscribers(store) do
+		GenServer.call(store, {:get_subscribers})
+	end
+
 	def init([reducer_map, nil]) when is_map(reducer_map), do: init([reducer_map, %{}])
 
 	def init([reducer_map, initial_state]) when is_map(reducer_map) do
@@ -32,6 +36,10 @@ defmodule Store do
 	def handle_call({:get_state}, _from , state) do
 		{:reply, Map.get(state, :store_state), state}
 	end
+	def handle_call({:get_subscribers}, _from, state) do
+		{:reply, Map.get(state, :subscribers), state}
+	end
+
 	def handle_call({:subscribe, subscriber}, _from, state) do
 		ref = make_ref()
 		{:reply, ref, put_in(state, [:subscribers, ref], subscriber)}
