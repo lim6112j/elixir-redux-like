@@ -5,8 +5,19 @@ defmodule CountReducer do
 	@behaviour Reducer
 	def reduce(nil, action), do: reduce(0, action)
 	def reduce(state, action), do: do_reduce(state, action)
-	defp do_reduce(state, %{type: "INCREMENT"}), do: state + 1
-	defp do_reduce(state, _), do: state
+	defp do_reduce(state, action) do
+		case action do
+			%{type: "@@INIT"} ->
+				state = 10
+				state
+			%{type: "INCREMENT"} ->
+				state + 1
+			_ -> state
+		end
+
+	end
+
+
 end
 defmodule SquareReducer do
 	@behaviour Reducer
@@ -14,6 +25,9 @@ defmodule SquareReducer do
 	def reduce(state, action), do: do_reduce(state, action)
 	defp do_reduce(state, action) do
 		case action do
+			%{type: "@@INIT"} ->
+				state = 100
+				state
 			%{type: "INCREMENT"} ->
 				state * 1
 			%{type: "DECREMENT"} ->
