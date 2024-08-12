@@ -1,6 +1,6 @@
 # ReduxLike
 
-**TODO: Add description**
+
 https://medium.com/flatiron-labs/something-useless-redux-implemented-in-elixir-208ddb47f5db
 
 ## commands history

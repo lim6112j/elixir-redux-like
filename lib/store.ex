@@ -19,7 +19,12 @@ defmodule Store do
 	def get_state(store) do
 		GenServer.call(store, {:get_state})
 	end
+	def init([reducer_map, nil]) when is_map(reducer_map), do: init([reducer_map, %{}])
 
+	def init([reducer_map, initial_state]) when is_map(reducer_map) do
+		store_state = CombineReducers.reduce(reducer_map, initial_state, @initialize_action)
+		{:ok, %{reducer: reducer_map, store_state: store_state, subscribers: %{}} }
+	end
 	def init([reducer, initial_state]) do
 		store_state = apply(reducer, :reduce, [initial_state, @initialize_action])
 		{:ok, %{reducer: reducer, store_state: store_state, subscribers: %{}} }
@@ -30,6 +35,12 @@ defmodule Store do
 	def handle_call({:subscribe, subscriber}, _from, state) do
 		ref = make_ref()
 		{:reply, ref, put_in(state, [:subscribers, ref], subscriber)}
+	end
+
+	def handle_cast({:dispatch, action}, state) when is_map(state.reducer) do
+		store_state = CombineReducers.reduce(state.reducer,state.store_state, action)
+		for {_ref, sub} <- state.subscribers, do: sub.(store_state)
+		{:noreply, Map.put(state, :store_state, store_state)}
 	end
 
 	def handle_cast({:dispatch, action}, state) do
