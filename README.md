@@ -17,6 +17,18 @@ Store.remove_subscriber(store, ref)
 
 Store.dispatch(store,%{type: "INCREMENT"})
 
+{:ok, store} = Store.start_link(%{count: CountReducer, square: SquareReducer})
+
+ref = Store.subscribe(store, fn (state) -> IO.puts "I got called #{state}" end)
+
+Store.dispatch(store,%{type: "INCREMENT"})
+
+Store.dispatch(store,%{type: "DECREMENT"})
+
+Store.get_state(store)
+
+Store.get_subscribers(store)
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
